@@ -1,0 +1,9 @@
+{
+  "name": "CMA Smart Study Tracker",
+  "short_name": "CMA Tracker",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f3f6fa",
+  "theme_color": "#10243a",
+  "description": "CMA student timetable, question-bank and exam preparation tracker by Suhail CMA."
+}

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#10243a"><meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>CMA Smart Study Tracker</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{--navy:#10243a;--blue:#1c4264;--teal:#14a89a;--bg:#f3f6fa;--ink:#17283b;--muted:#6b7c90;--line:#e3eaf1;--white:#fff;--orange:#f3a847;--red:#d95c5c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{background:linear-gradient(130deg,#10243a,#1b4968);color:#fff;padding:24px 18px 22px;border-radius:0 0 24px 24px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px}.brand{font-size:12px;letter-spacing:1.5px;opacity:.8;font-weight:700}.tag{font-size:11px;background:#ffffff1c;padding:7px 10px;border-radius:20px}
+h1{font-size:25px;margin:14px 0 4px}.sub{opacity:.78;font-size:13px}.wrap{max-width:900px;margin:auto;padding:16px}
+.tabs{display:flex;gap:7px;overflow:auto;padding:3px 0 13px}.tab{border:0;background:#e5edf4;color:#31516d;padding:10px 14px;border-radius:12px;font-weight:700;white-space:nowrap}.tab.active{background:var(--navy);color:white}
+.panel{display:none}.panel.active{display:block}.card{background:#fff;border:1px solid var(--line);border-radius:17px;padding:16px;margin-bottom:13px;box-shadow:0 3px 12px #16324b08}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px}.muted{color:var(--muted)}.small{font-size:12px}.big{font-size:27px;font-weight:800;letter-spacing:-1px}.metricgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.metric{background:#f7fafc;border-radius:13px;padding:13px}.metric strong{display:block;font-size:21px;margin-top:5px}
+.progress{height:9px;background:#e9eff4;border-radius:20px;overflow:hidden;margin:9px 0}.progress span{display:block;height:100%;background:var(--teal);border-radius:20px}
+h2{font-size:17px;margin:0 0 12px}h3{font-size:14px;margin:0 0 8px}.btn{border:0;border-radius:11px;background:var(--navy);color:#fff;padding:11px 14px;font-weight:700}.btn.alt{background:#e9f4f3;color:#137f76}.btn.ghost{background:#eef2f6;color:#34516c}.btn.danger{background:#fff0f0;color:#b83f3f}
+input,select,textarea{width:100%;border:1px solid #d8e1e9;border-radius:10px;padding:11px;background:#fff;color:var(--ink);font:inherit;min-width:0}label{font-size:12px;color:var(--muted);display:block;margin:10px 0 5px}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.item{padding:12px 0;border-top:1px solid var(--line)}.item:first-child{border-top:0}.item input[type=checkbox]{width:19px;height:19px;accent-color:var(--teal)}.checkrow{display:flex;align-items:center;gap:10px}
+.pill{font-size:11px;background:#edf4f8;padding:5px 8px;border-radius:20px;color:#45627a}
+.material{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:11px 0;border-top:1px solid var(--line)}
+.material input{max-width:110px}.empty{color:var(--muted);text-align:center;padding:20px}.footer{text-align:center;color:#8a99a8;font-size:11px;padding:18px}
+@media(min-width:650px){.metricgrid{grid-template-columns:repeat(4,minmax(0,1fr))}.wrap{padding:20px}.card{padding:19px}}
+</style>
+</head>
+<body>
+<header><div class="top"><div class="brand">SUHAIL CMA, B.COM</div><div class="tag">STUDENT EDITION</div></div>
+<h1>CMA Smart Study Tracker</h1><div class="sub">Your preparation. Your progress. Your exam.</div></header>
+<main class="wrap">
+<div class="tabs">
+<button class="tab active" data-tab="home">Overview</button><button class="tab" data-tab="daily">Daily Tracker</button>
+<button class="tab" data-tab="timetable">Timetable</button><button class="tab" data-tab="materials">Question Banks</button>
+<button class="tab" data-tab="revision">Revision & Mocks</button><button class="tab" data-tab="settings">My Plan</button>
+</div>
+<section id="home" class="panel active">
+<div class="card"><div class="row"><div><div class="muted small">TODAY'S DATE</div><h2 id="todayLabel" style="margin:5px 0 0"></h2></div><span class="pill" id="partBadge">PART 1</span></div>
+<div class="metricgrid" style="margin-top:15px">
+<div class="metric"><span class="muted small">Questions today</span><strong id="qToday">0 / 160</strong></div>
+<div class="metric"><span class="muted small">Reading today</span><strong id="pToday">0 / 24</strong></div>
+<div class="metric"><span class="muted small">Overall questions</span><strong id="qOverall">0%</strong></div>
+<div class="metric"><span class="muted small">Textbook reading</span><strong id="pOverall">0%</strong></div>
+</div></div>
+<div class="card"><div class="row"><h2>Preparation progress</h2><span class="pill" id="daysLeft">Set exam date</span></div>
+<div class="muted small">Question practice</div><div class="progress"><span id="qBar" style="width:0%"></span></div>
+<div class="row small"><span id="qDoneText">0 completed</span><span id="qTotalText">9,602 target</span></div>
+<div class="muted small" style="margin-top:13px">Textbook reading</div><div class="progress"><span id="pBar" style="width:0%"></span></div>
+<div class="row small"><span id="pDoneText">0 pages read</span><span id="pTotalText">742 pages</span></div></div>
+<div class="card"><h2>Today's timetable</h2><div id="todaySchedule" class="empty">No study sessions added yet. Add your timetable.</div></div>
+<div class="card"><h2>Quick actions</h2><div class="actions"><button class="btn" onclick="showTab('daily')">Update today's progress</button><button class="btn alt" onclick="showTab('timetable')">Manage timetable</button></div></div>
+</section>
+<section id="daily" class="panel">
+<div class="card"><div class="row"><h2>Daily study log</h2><input id="logDate" type="date" style="max-width:155px"></div>
+<div class="formgrid"><div><label>Questions completed today</label><input id="dailyQuestions" type="number" min="0" placeholder="e.g. 160"></div><div><label>Textbook pages read today</label><input id="dailyPages" type="number" min="0" placeholder="e.g. 24"></div></div>
+<label>Study hours completed</label><input id="dailyHours" type="number" min="0" step=".25" placeholder="e.g. 4.5">
+<label>Notes / topics covered</label><textarea id="dailyNotes" rows="2" placeholder="Write what you studied today..."></textarea>
+<div class="actions"><button class="btn" id="saveDaily">Save daily progress</button><button class="btn ghost" id="clearDaily">Clear fields</button></div></div>
+<div class="card"><h2>Daily target checklist</h2><div id="dailyChecklist"></div></div>
+<div class="card"><h2>Recent study history</h2><div id="history"></div></div>
+</section>
+<section id="timetable" class="panel">
+<div class="card"><h2>Build your study timetable</h2><div class="muted small">Add the time slots and tasks prescribed by your CMA faculty.</div>
+<div class="formgrid"><div><label>Start time</label><input id="slotStart" type="time"></div><div><label>End time</label><input id="slotEnd" type="time"></div></div>
+<label>Subject / activity</label><input id="slotTitle" placeholder="e.g. Financial Planning – MCQ practice">
+<label>Topic / instruction</label><input id="slotTopic" placeholder="e.g. Cost behaviour – 40 questions">
+<div class="actions"><button class="btn" id="addSlot">Add timetable slot</button></div></div>
+<div class="card"><div class="row"><h2>My weekly timetable</h2><button class="btn ghost" id="clearSlots">Clear all</button></div><div id="slotList"></div></div>
+</section>
+<section id="materials" class="panel">
+<div class="card"><h2>Question-bank progress</h2><div class="muted small">Enter the number of questions completed in each material. Progress is saved on this device.</div><div id="materialList"></div></div>
+<div class="card"><h2>IMA reference questions</h2><div class="formgrid"><div><label>IMA questions completed</label><input id="imaDone" type="number" min="0"></div><div><label>Other practice completed</label><input id="otherDone" type="number" min="0"></div></div><button class="btn" id="saveMaterials" style="margin-top:12px">Save question-bank progress</button></div>
+</section>
+<section id="revision" class="panel">
+<div class="card"><h2>Revision planner</h2><div class="formgrid"><div><label>Revision date</label><input id="revDate" type="date"></div><div><label>Revision topic</label><input id="revTopic" placeholder="Topic / chapter"></div></div>
+<label>Revision type</label><select id="revType"><option>Concept revision</option><option>MCQ practice</option><option>Essay practice</option><option>Formula review</option><option>Error-log review</option></select>
+<button class="btn" id="addRevision" style="margin-top:12px">Add revision task</button><div id="revisionList" style="margin-top:12px"></div></div>
+<div class="card"><h2>Mock exam tracker</h2><div class="formgrid"><div><label>Mock date</label><input id="mockDate" type="date"></div><div><label>Score (%)</label><input id="mockScore" type="number" min="0" max="100" placeholder="e.g. 78"></div></div>
+<label>Mock exam / provider</label><input id="mockName" placeholder="e.g. Gleim Mock 1">
+<button class="btn" id="addMock" style="margin-top:12px">Save mock result</button><div id="mockList" style="margin-top:12px"></div></div>
+</section>
+<section id="settings" class="panel">
+<div class="card"><h2>My CMA study plan</h2><div class="formgrid"><div><label>Student name</label><input id="studentName" placeholder="Your name"></div><div><label>Exam part</label><select id="partSelect"><option value="1">CMA Part 1</option><option value="2">CMA Part 2</option></select></div></div>
+<div class="formgrid"><div><label>Study start date</label><input id="startDate" type="date"></div><div><label>Target exam date</label><input id="examDate" type="date"></div></div>
+<div class="formgrid"><div><label>Daily MCQ target</label><input id="qTarget" type="number" min="1"></div><div><label>Daily reading target (pages)</label><input id="pTarget" type="number" min="1"></div></div>
+<div class="actions"><button class="btn" id="saveSettings">Save my study plan</button></div></div>
+<div class="card"><h2>Plan reference – Suhail CMA</h2><div class="muted small">Based on the study-plan PDF supplied by your faculty.</div><div id="referencePlan"></div></div>
+<div class="card"><h2>Data & privacy</h2><p class="muted small">Your entries are stored locally in this browser on this device. They are not automatically shared with your teacher or other students. Use Export backup to save a copy before changing or clearing browser data.</p>
+<div class="actions"><button class="btn alt" id="exportData">Export backup</button><button class="btn ghost" id="importBtn">Import backup</button><input id="importFile" type="file" accept="application/json" hidden><button class="btn danger" id="resetData">Reset all my data</button></div></div>
+</section>
+<div class="footer">CMA SMART STUDY TRACKER · BY SUHAIL CMA, B.COM</div>
+</main>
+<script>
+const plans={
+ "1":{materials:[["Hock",1500],["Hock Material",2050],["Gleim",2535],["Wiley",3136]],mcq:9221,ima:381,total:9602,pages:742,dailyQ:160,dailyP:24,core:"2 months",revision:"15 days",duration:"2.5 months"},
+ "2":{materials:[["Hock PDF",1194],["Hock Material",1551],["Gleim",1903],["Wiley",2404]],mcq:7052,ima:395,total:7447,pages:467,dailyQ:160,dailyP:16,core:"1.5 months",revision:"15 days",duration:"2 months"}
+};
+const KEY="cmaSmartTracker_v1";
+let data=load();
+function fresh(){return {settings:{part:"1",qTarget:160,pTarget:24,studentName:"",startDate:"",examDate:""},logs:{},materials:{"1":[0,0,0,0],"2":[0,0,0,0]},ima:{"1":0,"2":0},other:{"1":0,"2":0},slots:[],revisions:[],mocks:[]}}
+function load(){try{return {...fresh(),...JSON.parse(localStorage.getItem(KEY)||"{}")}}catch(e){return fresh()}}
+function save(){localStorage.setItem(KEY,JSON.stringify(data));render()}
+function part(){return data.settings.part||"1"}function plan(){return plans[part()]}function today(){return new Date().toISOString().slice(0,10)}
+function fmt(n){return Number(n||0).toLocaleString("en-IN")}
+function showTab(id){document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===id));document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===id))}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+function logFor(d){return data.logs[d]||{q:0,p:0,h:0,notes:""}}
+function render(){
+ const p=plan(),pt=part(),t=today(),log=logFor(t),logs=Object.values(data.logs);
+ document.getElementById("todayLabel").textContent=new Date().toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+ document.getElementById("partBadge").textContent="PART "+pt;
+ document.getElementById("qToday").textContent=fmt(log.q)+" / "+fmt(data.settings.qTarget);
+ document.getElementById("pToday").textContent=fmt(log.p)+" / "+fmt(data.settings.pTarget);
+ const qDone=(data.materials[pt]||[]).reduce((a,b)=>a+Number(b||0),0)+Number(data.ima[pt]||0)+Number(data.other[pt]||0);
+ const qPct=Math.min(100,Math.round(qDone/p.total*100)),pDone=logs.reduce((a,x)=>a+Number(x.p||0),0),pPct=Math.min(100,Math.round(pDone/p.pages*100));
+ document.getElementById("qOverall").textContent=qPct+"%";document.getElementById("pOverall").textContent=pPct+"%";
+ document.getElementById("qBar").style.width=qPct+"%";document.getElementById("pBar").style.width=pPct+"%";
+ document.getElementById("qDoneText").textContent=fmt(qDone)+" completed";document.getElementById("qTotalText").textContent=fmt(p.total)+" target";
+ document.getElementById("pDoneText").textContent=fmt(pDone)+" pages read";document.getElementById("pTotalText").textContent=fmt(p.pages)+" pages";
+ let days=data.settings.examDate?Math.ceil((new Date(data.settings.examDate+"T00:00:00")-new Date(t+"T00:00:00"))/86400000):null;
+ document.getElementById("daysLeft").textContent=days===null?"Set exam date":days>=0?days+" days to exam":"Exam date passed";
+ document.getElementById("todaySchedule").innerHTML=data.slots.length?data.slots.slice().sort((a,b)=>a.start.localeCompare(b.start)).map(s=>`<div class="item"><b>${esc(s.start)}–${esc(s.end)} · ${esc(s.title)}</b><div class="muted small">${esc(s.topic||"")}</div></div>`).join(""):'<div class="empty">No study sessions added yet.</div>';
+ document.getElementById("dailyQuestions").value=log.q||"";document.getElementById("dailyPages").value=log.p||"";document.getElementById("dailyHours").value=log.h||"";document.getElementById("dailyNotes").value=log.notes||"";
+ document.getElementById("logDate").value=t;
+ document.getElementById("dailyChecklist").innerHTML=[["Complete daily MCQ target",log.q>=data.settings.qTarget],["Complete daily reading target",log.p>=data.settings.pTarget],["Review mistakes and weak areas",false],["Prepare tomorrow's study tasks",false]].map((x,i)=>`<div class="item checkrow"><input type="checkbox" ${x[1]?"checked":""} ${i<2?"disabled":""}><span>${x[0]}</span>${i<2?`<span class="pill">${x[1]?"Done":"Pending"}</span>`:""}</div>`).join("");
+ const hist=Object.entries(data.logs).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,10);
+ document.getElementById("history").innerHTML=hist.length?hist.map(([d,l])=>`<div class="item"><div class="row"><b>${esc(d)}</b><span class="pill">${fmt(l.q)} questions · ${fmt(l.p)} pages</span></div><div class="muted small">${esc(l.notes||"")}</div></div>`).join(""):'<div class="empty">Your saved study days will appear here.</div>';
+ document.getElementById("materialList").innerHTML=p.materials.map((m,i)=>`<div class="material"><div><b>${esc(m[0])}</b><div class="muted small">${fmt(data.materials[pt][i])} / ${fmt(m[1])} questions</div><div class="progress"><span style="width:${Math.min(100,data.materials[pt][i]/m[1]*100)}%"></span></div></div><input aria-label="${esc(m[0])} completed" type="number" min="0" max="${m[1]}" id="mat${i}" value="${data.materials[pt][i]}"></div>`).join("");
+ document.getElementById("imaDone").value=data.ima[pt]||0;document.getElementById("otherDone").value=data.other[pt]||0;
+ document.getElementById("slotList").innerHTML=data.slots.length?data.slots.slice().sort((a,b)=>a.start.localeCompare(b.start)).map((s,i)=>`<div class="item"><div class="row"><div><b>${esc(s.start)}–${esc(s.end)} · ${esc(s.title)}</b><div class="muted small">${esc(s.topic||"")}</div></div><button class="btn danger" onclick="removeSlot(${data.slots.indexOf(s)})">Remove</button></div></div>`).join(""):'<div class="empty">No timetable slots yet.</div>';
+ document.getElementById("revisionList").innerHTML=data.revisions.length?data.revisions.slice().sort((a,b)=>a.date.localeCompare(b.date)).map((r,i)=>`<div class="item row"><div><b>${esc(r.date)} · ${esc(r.topic)}</b><div class="muted small">${esc(r.type)}</div></div><button class="btn danger" onclick="removeRevision(${i})">×</button></div>`).join(""):'<div class="empty">No revision tasks added.</div>';
+ document.getElementById("mockList").innerHTML=data.mocks.length?data.mocks.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(m=>`<div class="item row"><div><b>${esc(m.name)}</b><div class="muted small">${esc(m.date)}</div></div><span class="pill">${m.score}%</span></div>`).join(""):'<div class="empty">No mock exams recorded.</div>';
+ document.getElementById("studentName").value=data.settings.studentName||"";document.getElementById("partSelect").value=pt;document.getElementById("startDate").value=data.settings.startDate||"";document.getElementById("examDate").value=data.settings.examDate||"";document.getElementById("qTarget").value=data.settings.qTarget;document.getElementById("pTarget").value=data.settings.pTarget;
+ document.getElementById("referencePlan").innerHTML=`<div class="item"><b>Part ${pt}</b><div class="muted small">${fmt(p.mcq)} material MCQs + ${fmt(p.ima)} IMA reference = ${fmt(p.total)} total practice questions</div></div><div class="item">${fmt(p.pages)} textbook pages · ${p.dailyP} pages/day · ${p.dailyQ} questions/day</div><div class="item">Core study: ${p.core} · Revision: ${p.revision} · Total: ${p.duration}</div>`;
+}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+document.getElementById("saveDaily").onclick=()=>{let d=document.getElementById("logDate").value||today();data.logs[d]={q:+document.getElementById("dailyQuestions").value||0,p:+document.getElementById("dailyPages").value||0,h:+document.getElementById("dailyHours").value||0,notes:document.getElementById("dailyNotes").value};save();alert("Daily progress saved.")};
+document.getElementById("clearDaily").onclick=()=>["dailyQuestions","dailyPages","dailyHours","dailyNotes"].forEach(id=>document.getElementById(id).value="");
+document.getElementById("logDate").onchange=e=>{let l=logFor(e.target.value);document.getElementById("dailyQuestions").value=l.q||"";document.getElementById("dailyPages").value=l.p||"";document.getElementById("dailyHours").value=l.h||"";document.getElementById("dailyNotes").value=l.notes||""};
+document.getElementById("addSlot").onclick=()=>{let start=slotStart.value,end=slotEnd.value,title=slotTitle.value.trim();if(!start||!end||!title)return alert("Enter start time, end time and subject/activity.");if(end<=start)return alert("End time must be after start time.");data.slots.push({start,end,title,topic:slotTopic.value});slotTitle.value="";slotTopic.value="";save()};
+window.removeSlot=i=>{data.slots.splice(i,1);save()};document.getElementById("clearSlots").onclick=()=>{if(confirm("Remove all timetable slots?")){data.slots=[];save()}};
+document.getElementById("saveMaterials").onclick=()=>{let pt=part();data.materials[pt]=plans[pt].materials.map((m,i)=>Math.max(0,Math.min(m[1],+document.getElementById("mat"+i).value||0)));data.ima[pt]=Math.max(0,Math.min(plans[pt].ima,+imaDone.value||0));data.other[pt]=Math.max(0,Math.min(plans[pt].mcq,+otherDone.value||0));save();alert("Question-bank progress saved.")};
+document.getElementById("saveSettings").onclick=()=>{data.settings={...data.settings,studentName:studentName.value,part:partSelect.value,startDate:startDate.value,examDate:examDate.value,qTarget:Math.max(1,+qTarget.value||160),pTarget:Math.max(1,+pTarget.value||24)};save();alert("Study plan saved.")};
+document.getElementById("addRevision").onclick=()=>{if(!revDate.value||!revTopic.value.trim())return alert("Enter a revision date and topic.");data.revisions.push({date:revDate.value,topic:revTopic.value,type:revType.value});revTopic.value="";save()};
+window.removeRevision=i=>{data.revisions.splice(i,1);save()};
+document.getElementById("addMock").onclick=()=>{let score=+mockScore.value;if(!mockDate.value||!mockName.value.trim()||mockScore.value===""||score<0||score>100)return alert("Enter mock name, date and a score from 0 to 100.");data.mocks.push({date:mockDate.value,name:mockName.value,score});mockName.value="";mockScore.value="";save()};
+document.getElementById("exportData").onclick=()=>{let blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="cma-study-tracker-backup.json";a.click();URL.revokeObjectURL(a.href)};
+document.getElementById("importBtn").onclick=()=>importFile.click();document.getElementById("importFile").onchange=async e=>{try{let v=JSON.parse(await e.target.files[0].text());if(!v.settings||!v.logs)throw 0;data={...fresh(),...v};save();alert("Backup imported.")}catch(err){alert("This backup file is not valid.")}};
+document.getElementById("resetData").onclick=()=>{if(confirm("This will permanently clear this device's study data. Export a backup first if needed. Continue?")){data=fresh();save()}};
+render();
+if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js").catch(()=>{}));
+</script>
+</body></html>
